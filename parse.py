@@ -16,6 +16,7 @@ parser.add_option('-v', action='count', dest='verbosity', default=0, help='incre
 parser.add_option('-q', '--quiet', action='store_true', dest='quiet', help='hide all output')
 parser.add_option('-l', '--lang', dest='lang', default='es', type='string', help='subtitle language (default: es)')
 parser.add_option('-f', '--file', dest='file', default=None, type='string', help='file where to store the TTML output')
+parser.add_option('-t', '--type', dest='type', default='ttml', type='string', help='file extension')
 (options, args) = parser.parse_args()
 
 class CaptionParser(HTMLParser):
@@ -58,11 +59,14 @@ def create_srt_caption(match):
 def create_ttml_file(filename, subtitles):
     ''' Create TTML subtitle file '''
     fp = open(filename, 'wb')
-    fp.write('<?xml version="1.0" encoding="UTF-8"?>\n')
-    #fp.write('<?access-control allow="*"?>\n')
-    fp.write('<tt xmlns="http://www.w3.org/ns/ttml" xmlns:ttm="http://www.w3.org/ns/ttml#metadata" xml:lang="%s">\n' % options.lang)
+    fp.write('<?xml version="1.0" encoding="utf-8"?>\n')
+    fp.write('<tt xml:lang="%s" xmlns="http://www.w3.org/2006/10/ttaf1">\n' % options.lang)
     fp.write('  <head>\n')
-    fp.write('    <ttm:copyright>(c) Telemundo %s, all rights reserved.</ttm:copyright>\n' % date.today().year)
+    fp.write('    <metadata>\n')
+    fp.write('      <ttm:title xmlns:ttm="http://www.w3.org/2006/10/ttaf1#metadata" />\n')
+    fp.write('      <ttm:desc xmlns:ttm="http://www.w3.org/2006/10/ttaf1#metadata" />\n')
+    fp.write('      <ttm:copyright xmlns:ttm="http://www.w3.org/2006/10/ttaf1#metadata">(c) Telemundo %s, all rights reserved.</ttm:copyright>\n' % date.today().year)
+    fp.write('    </metadata>\n')
     fp.write('  </head>\n')
     fp.write('  <body>\n')
     fp.write('    <div>\n')
@@ -70,13 +74,13 @@ def create_ttml_file(filename, subtitles):
         parser = CaptionParser()
         parser.feed(subtitle['text'])
         caption = parser.render_output()
-        line = '      <p xml:id="s%d" ttm:role="caption" begin="%s" end="%s">%s</p>\n' % (subtitle['pos'], subtitle['timecode'][0], subtitle['timecode'][1], caption)
+        line = '      <p id="cation%d" begin="%s" end="%s">%s</p>\n' % (subtitle['pos'], subtitle['timecode'][0], subtitle['timecode'][1], caption)
         if options.verbosity >= 2 and not options.quiet:
             print '[%s] DEBUG: %s' % (time.strftime('%Y-%m-%d %H:%M:%S'), saxutils.unescape(caption))
         fp.write(line)
     fp.write('    </div>\n')
     fp.write('  </body>\n')
-    fp.write('</tt>')
+    fp.write('</tt>\n')
     fp.close()
 
 def main():
@@ -101,7 +105,7 @@ def main():
         if options.file is not None:
             ttmlfile = options.file
         else:
-            ttmlfile = '%s_%s.ttml' % (filebase, options.lang.upper())
+            ttmlfile = '%s_%s.%s' % (filebase, options.lang.upper(), options.type)
         create_ttml_file('%s/%s' % (filedir, ttmlfile), subtitles)
         if options.verbosity >= 1 and not options.quiet:
             print '[%s] NOTICE: %s was generated succesfully' % (time.strftime('%Y-%m-%d %H:%M:%S'), ttmlfile)
