@@ -14,9 +14,9 @@ from datetime import date
 parser = OptionParser(usage='usage: %prog [options] subtitle')
 parser.add_option('-v', action='count', dest='verbosity', default=0, help='increase output verbosity')
 parser.add_option('-q', '--quiet', action='store_true', dest='quiet', help='hide all output')
-parser.add_option('-l', '--lang', dest='lang', default='es', type='string', help='subtitle language (default: es)')
+parser.add_option('-l', '--lang', dest='lang', default='en-us', type='string', help='subtitle language (default: es)')
 parser.add_option('-f', '--file', dest='file', default=None, type='string', help='file where to store the TTML output')
-parser.add_option('-t', '--type', dest='type', default='ttml', type='string', help='file extension')
+parser.add_option('-t', '--type', dest='type', default='xml', type='string', help='file extension')
 (options, args) = parser.parse_args()
 
 class CaptionParser(HTMLParser):
@@ -25,18 +25,6 @@ class CaptionParser(HTMLParser):
     def __init__(self):
         self.stack = []
         self.reset()
-    '''
-    def handle_starttag(self, tag, attrs):
-        if tag == 'i':
-            style = ' tts:fontStyle="italic"'
-        elif tag == 'b' or tag == 'strong':
-            style = ' tts:fontStyle="bold"'
-        else:
-            style = ''
-        self.stack.append('<span%s>' % style)
-    def handle_endtag(self, tag):
-        self.stack.append('</span>')
-    '''
     def handle_data(self, data):
         self.stack.append(saxutils.escape(data))
     def render_output(self):
@@ -62,10 +50,8 @@ def create_ttml_file(filename, subtitles):
     fp.write('<?xml version="1.0" encoding="utf-8"?>\n')
     fp.write('<tt xml:lang="%s" xmlns="http://www.w3.org/2006/10/ttaf1">\n' % options.lang)
     fp.write('  <head>\n')
-    fp.write('    <metadata>\n')
-    fp.write('      <ttm:title xmlns:ttm="http://www.w3.org/2006/10/ttaf1#metadata" />\n')
-    fp.write('      <ttm:desc xmlns:ttm="http://www.w3.org/2006/10/ttaf1#metadata" />\n')
-    fp.write('      <ttm:copyright xmlns:ttm="http://www.w3.org/2006/10/ttaf1#metadata">(c) Telemundo %s, all rights reserved.</ttm:copyright>\n' % date.today().year)
+    fp.write('    <metadata xmlns:ttm="http://www.w3.org/2006/10/ttaf1#metadata">\n')
+    fp.write('      <ttm:copyright>Telemundo (c) %s, all rights reserved.</ttm:copyright>\n' % date.today().year)
     fp.write('    </metadata>\n')
     fp.write('  </head>\n')
     fp.write('  <body>\n')
@@ -74,7 +60,7 @@ def create_ttml_file(filename, subtitles):
         parser = CaptionParser()
         parser.feed(subtitle['text'])
         caption = parser.render_output()
-        line = '      <p id="cation%d" begin="%s" end="%s">%s</p>\n' % (subtitle['pos'], subtitle['timecode'][0], subtitle['timecode'][1], caption)
+        line = '      <p xml:id="caption-%d" begin="%s" end="%s">%s</p>\n' % (subtitle['pos'], subtitle['timecode'][0], subtitle['timecode'][1], caption)
         if options.verbosity >= 2 and not options.quiet:
             print '[%s] DEBUG: %s' % (time.strftime('%Y-%m-%d %H:%M:%S'), saxutils.unescape(caption))
         fp.write(line)
