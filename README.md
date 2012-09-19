@@ -16,4 +16,4 @@ Rodolfo Puig - <rodolfo.puig@nbcuni.com> - <https://twitter.com/rpuig_nbcuni><br
 
 ## License ##
 
-Socialite is licensed under the MIT License - see the LICENSE file for details
+TTML Generator is licensed under the MIT License - see the LICENSE file for details
