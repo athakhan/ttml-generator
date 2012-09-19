@@ -1,6 +1,6 @@
 # TTML Generator #
 
-Generates a TTML file from other subtitles.
+Generates [TTML 1.0](http://www.w3.org/TR/ttaf1-dfxp/) files from different subtitle formats.
 
 ## Usage ##
 
