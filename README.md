@@ -9,7 +9,7 @@ Generates [TTML 1.0](http://www.w3.org/TR/ttaf1-dfxp/) files from different subt
 
 ## Requirements
 
-- telemundo 0.1
+- [telemundo](http://pypi.python.org/pypi/telemundo)
 
 ## Submitting bugs and feature requests
 
@@ -21,4 +21,4 @@ Rodolfo Puig - <rodolfo.puig@nbcuni.com> - [@rpuig_nbcuni](https://twitter.com/r
 
 ## License
 
-This package is licensed under the MIT License - see the LICENSE file for details
+This package is licensed under the MIT License - see the LICENSE file for details.
