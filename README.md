@@ -5,7 +5,7 @@ Generates [TTML 1.0](http://www.w3.org/TR/ttaf1-dfxp/) files from different subt
 ## Usage
 
     pip install -r requirements.txt
-    python parse.py -h
+    python module.py -h
 
 ## Requirements
 
